@@ -29,7 +29,7 @@ def authors_view():
     for a_v in art:
         print a_v[0], "--", a_v[1]
 
-
+#log
 def log_view():
     curr.execute("select * from log_view where percentage_errors > 1 ;")
     find = curr.fetchall()
