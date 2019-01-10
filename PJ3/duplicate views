@@ -1,0 +1,49 @@
+#### article_view
+CREATE VIEW articles_view AS
+SELECT title,
+       author,
+       count(title) AS views
+FROM articles,
+     log
+WHERE log.path LIKE concat('%',articles.slug)
+GROUP BY articles.title,
+         articles.author
+ORDER BY views DESC limit 3;
+
+#### authors_view
+CREATE VIEW authors_view AS
+SELECT name,
+       sum(articles_view.views) AS total
+FROM article_view,
+     authors
+WHERE authors.id=article_view.author
+GROUP BY authors.name
+ORDER BY total DESC limit 4;
+
+
+
+
+#### err_perc
+
+CREATE VIEW error_per_view AS
+SELECT total_request.date,
+       round((100.0*error_request.count)/total_request.count,2) AS error_per_view
+FROM total_request
+error_request,
+
+WHERE total_request.date=error_request.date;
+
+#### errors_view
+
+CREATE VIEW errors_view AS
+SELECT date(time),count(*) as errors
+FROM log WHERE log.status like concat('404 NOT FOUND')
+GROUP BY date(time) ORDER BY errors desc;
+
+
+#### totals_view:
+
+CREATE VIEW totals_view AS
+SELECT date(time),count(status) AS
+total_errors FROM log GROUP BY date(time)
+ORDER BY total_errors desc;
